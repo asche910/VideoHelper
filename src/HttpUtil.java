@@ -8,6 +8,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * 该类完成视频下载的一些基本操作
+ * @author As_
+ * @date 2018-09-17 20:29:12
+ * @github https://github.com/apknet
+ */
 public class HttpUtil {
 
     /**
@@ -39,8 +45,10 @@ public class HttpUtil {
     public static List<String> getSrcList(String url) throws IOException {
         List<String> list = new ArrayList<>();
         String content = getContent(url);
+        // 提取出相对路径
         String relUrl = url.replaceAll("/\\w+-\\w+-\\w+-\\w+-\\w+\\.m3u8.*", "");
 
+        // 正则提取出的为相对路径, 需与前面的relUrl完成拼接
         Matcher matcher = Pattern.compile("EXTINF:\\d+\\.\\d+,(.+?)#").matcher(content);
 
         while (matcher.find()){

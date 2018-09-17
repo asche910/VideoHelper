@@ -8,9 +8,9 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        String url_1 = "https://lens.zhihu.com/api/videos/1024143280014860288";
-        String url_2 = "https://vdn.vzuu.com/Act-ss-m3u8-hd/4fd6633884584a64b1928ec227eab88e/cbd51892-b857-11e8-8ab2-0242ac112a18None-00001.ts?auth_key=1537185501-0-0-0673e36c483f793ab7f9eb130942a5ad";
 
+        // 将下面的替换成对应的知乎视频url即可
+        String url_1 = "https://lens.zhihu.com/api/videos/1024143280014860288";
 
         try {
             FileOutputStream outputStream = new FileOutputStream(new File("/home/as_/IdeaProjects/VideoHelper/video_1.mp4"));
@@ -25,6 +25,5 @@ public class Main {
             e.printStackTrace();
         }
     }
-
 
 }
