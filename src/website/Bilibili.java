@@ -54,7 +54,9 @@ public class Bilibili extends BaseSite {
     private final int AV_VIDEO = 1;
     private final int EP_VIDEO = 2;
     private final int SS_VIDEO = 3;
+
     private int type = AV_VIDEO;
+    private boolean isSupported;
 
     // ep的关联系列
     private List<BilibiliBean> serialList = new ArrayList<>();
@@ -70,13 +72,16 @@ public class Bilibili extends BaseSite {
         for (String str : strs) {
             if (str.matches("av\\d{4,}")) {
                 aid = Integer.parseInt(str.substring(2));
+                isSupported = true;
+                break;
             } else if(str.matches("ep\\d{4,}")){
                 type = EP_VIDEO;
+                isSupported = true;
+                break;
             } else if(str.matches("ss\\d{4,}")){
                 type = SS_VIDEO;
-            }else{
-                println("暂时不支持该视频下载！");
-                return;
+                isSupported = true;
+                break;
             }
         }
 

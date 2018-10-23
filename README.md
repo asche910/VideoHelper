@@ -7,7 +7,7 @@
 
 项目内视频的初步链接可通过如图方式获取:
 
-![image](https://github.com/apknet/VideoHelper/blob/master/screenshots/Screenshot%20from%202018-09-17%2020-21-16.png)
+![image](https://github.com/asche910/VideoHelper/blob/master/screenshots/Screenshot%20from%202018-09-17%2020-21-16.png)
 
 F12 元素选择器选中视频框后会找到<iframe>标签,其中的src就是对应的视频初步链接
   
