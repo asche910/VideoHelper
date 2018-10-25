@@ -10,10 +10,12 @@ public class Main {
         String playUrl = "https://www.bilibili.com/video/av29446057/?spm_id_from=333.334.bili_music.5";
         String outputdir = "/home/as_/IdeaProjects/VideoHelper/";
 
-        println(args.length);
-
         if (args.length == 1) {
             playUrl = args[0];
+
+            String path = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+            outputdir = path.substring(0, path.lastIndexOf(File.separatorChar));
+
         }else if (args.length == 2){
             playUrl = args[0];
             outputdir = args[1];
@@ -27,8 +29,6 @@ public class Main {
 
         try {
             // new Zhihu().downloadByUrl(playUrl, outputdir);
-
-            println(playUrl + "..." + outputdir);
 
             new Bilibili().downloadByUrl(playUrl, outputdir);
 

@@ -13,6 +13,7 @@ import util.HttpUtil;
 import util.MD5Encoder;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -117,7 +118,6 @@ public class Bilibili extends BaseSite {
         }
     }
 
-
     /**
      * 内部下载入口
      *
@@ -137,9 +137,9 @@ public class Bilibili extends BaseSite {
 
             String fileDir;
             if (videoSrcs.size() == 1) {
-                fileDir = outputDir + "/" + fileName + ".flv";
+                fileDir = outputDir + File.separatorChar + fileName + ".flv";
             } else {
-                fileDir = outputDir + "/" + fileName + "【" + index + "】.flv";
+                fileDir = outputDir + File.separatorChar + fileName + "【" + index + "】.flv";
             }
 
             DownloadUtil.downloadVideo(src, fileDir, headerMap);
@@ -219,7 +219,7 @@ public class Bilibili extends BaseSite {
     private void parseAvApiResponse(String avReqApi) throws IOException {
         String result = HttpUtil.getResponseContent(avReqApi);
 
-        System.out.println(result);
+        // println(result);
 
         JSONObject jsonObject = new JSONObject(result);
         timeLength = jsonObject.getInt("timelength");

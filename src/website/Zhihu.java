@@ -37,7 +37,7 @@ public class Zhihu extends BaseSite{
         for (String str: strs)
             if (str.matches("\\d{8,}"))
                 id = str;
-        String fileDir = outputDir + "/zhihu_" + id + ".mp4";
+        String fileDir = outputDir + File.separatorChar + "zhihu_" + id + ".mp4";
 
         try {
             String videoSrc = getVideoSrc(ApiUrl + id);
