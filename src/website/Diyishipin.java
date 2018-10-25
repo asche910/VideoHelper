@@ -5,6 +5,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import util.DownloadUtil;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -40,7 +41,7 @@ public class Diyishipin extends BaseSite {
 
         String[] strs = videoSrcs.get(0).split("/");
         String fileName = strs[strs.length-1];
-        String fileDir = outputDir + "/" + fileName;
+        String fileDir = outputDir + File.separatorChar + fileName.replaceAll("[/|\\\\]", "");
 
         try {
             DownloadUtil.downloadVideo(videoSrcs.get(0), fileDir);

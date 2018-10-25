@@ -13,6 +13,7 @@ import util.HttpUtil;
 import util.MD5Encoder;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -137,9 +138,9 @@ public class Bilibili extends BaseSite {
 
             String fileDir;
             if (videoSrcs.size() == 1) {
-                fileDir = outputDir + "/" + fileName + ".flv";
+                fileDir = outputDir + File.separatorChar + fileName.replaceAll("[/|\\\\]", "") + ".flv";
             } else {
-                fileDir = outputDir + "/" + fileName + "【" + index + "】.flv";
+                fileDir = outputDir + File.separatorChar + fileName.replaceAll("[/|\\\\]", "") + "【" + index + "】.flv";
             }
 
             DownloadUtil.downloadVideo(src, fileDir, headerMap);

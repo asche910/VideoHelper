@@ -37,6 +37,8 @@ public class DownloadUtil {
             }
         }
 
+        println(fileDir);
+
         File file = new File(fileDir);
 
         // 文件存在则重命名
@@ -62,7 +64,7 @@ public class DownloadUtil {
             file = new File(fileDir);
         }
 
-        FileOutputStream outputStream = new FileOutputStream(new File(fileDir));
+        FileOutputStream outputStream = new FileOutputStream(file);
         InputStream inputStream = connection.getInputStream();
 
         System.out.println("Start downloading...");

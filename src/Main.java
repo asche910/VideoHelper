@@ -1,22 +1,32 @@
 import website.Bilibili;
+import website.Zhihu;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 import static util.PrintUtil.println;
 
 public class Main {
     public static void main(String[] args) {
 
-        String playUrl = "https://www.bilibili.com/video/av29446057/?spm_id_from=333.334.bili_music.5";
+        String playUrl = "https://www.bilibili.com/video/av34350976/";
         String outputdir = "/home/as_/IdeaProjects/VideoHelper/";
 
-        println(args.length);
 
         if (args.length == 1) {
             playUrl = args[0];
+
+//            String path = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+//            outputdir = path.substring(0, path.lastIndexOf(File.separatorChar));
+
+            outputdir = System.getProperty("user.dir");
+            println("OutputDir: " + outputdir);
         }else if (args.length == 2){
             playUrl = args[0];
             outputdir = args[1];
+
+            println("OutputDir: " + args[1]);
 
             File file = new File(outputdir);
             if (!file.isDirectory()){
@@ -26,9 +36,7 @@ public class Main {
         }
 
         try {
-            // new Zhihu().downloadByUrl(playUrl, outputdir);
-
-            println(playUrl + "..." + outputdir);
+//             new Zhihu().downloadByUrl(playUrl, outputdir);
 
             new Bilibili().downloadByUrl(playUrl, outputdir);
 
