@@ -137,9 +137,10 @@ public class Bilibili extends BaseSite {
 
             String fileDir;
             if (videoSrcs.size() == 1) {
-                fileDir = outputDir + File.separatorChar + fileName + ".flv";
+
+                fileDir = outputDir + File.separatorChar + fileName.replaceAll("[/|\\\\]", "") + ".flv";
             } else {
-                fileDir = outputDir + File.separatorChar + fileName + "【" + index + "】.flv";
+                fileDir = outputDir + File.separatorChar + fileName.replaceAll("[/|\\\\]", "") + "【" + index + "】.flv";
             }
 
             DownloadUtil.downloadVideo(src, fileDir, headerMap);

@@ -41,7 +41,7 @@ public class Diyishipin extends BaseSite {
 
         String[] strs = videoSrcs.get(0).split("/");
         String fileName = strs[strs.length-1];
-        String fileDir = outputDir + File.separatorChar + fileName;
+        String fileDir = outputDir + File.separatorChar + fileName.replaceAll("[/|\\\\]", "");
 
         try {
             DownloadUtil.downloadVideo(videoSrcs.get(0), fileDir);
