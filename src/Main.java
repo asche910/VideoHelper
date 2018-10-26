@@ -29,7 +29,7 @@ public class Main {
             println("OutputDir: " + args[1]);
 
             File file = new File(outputdir);
-            if (!file.isDirectory()){
+            if (!file.isDirectory()){    
                 println("请输入有效的输出目录！");
                 return;
             }
@@ -45,3 +45,4 @@ public class Main {
         }
     }
 }
+
