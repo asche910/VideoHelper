@@ -1,5 +1,6 @@
 package website;
 
+import bean.VideoBean;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -7,6 +8,7 @@ import util.DownloadUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,18 +20,59 @@ import java.util.List;
  */
 public class Diyishipin extends BaseSite {
 
+    private String playUrl;
+    private String outputDir;
+    private String fileName;
+
+    private boolean isResolved;
+
+    public Diyishipin() {
+    }
+
+    public Diyishipin(String playUrl, String outputDir) {
+        if (!isResolved) {
+            this.playUrl = playUrl;
+            this.outputDir = outputDir;
+
+            try {
+                Document document = Jsoup.connect(playUrl).get();
+                Element embed = document.body().selectFirst("object[id=play1]").selectFirst("embed[name=play1]");
+
+                String flashvars = embed.attr("flashvars");
+                String videoSrc = flashvars.substring(flashvars.indexOf("videoUrl=") + 9);
+
+                urls.add(videoSrc);
+
+                String[] strs = videoSrc.split("/");
+                fileName = strs[strs.length-1];
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            isResolved = true;
+        }
+
+    }
+
     @Override
     public void downloadByUrl(String playUrl, String outputDir) {
         try {
-            Document document = Jsoup.connect(playUrl).get();
-            Element embed = document.body().selectFirst("object[id=play1]").selectFirst("embed[name=play1]");
+            if (!isResolved) {
+                Document document = Jsoup.connect(playUrl).get();
+                Element embed = document.body().selectFirst("object[id=play1]").selectFirst("embed[name=play1]");
 
-            String flashvars = embed.attr("flashvars");
-            String videoSrc = flashvars.substring(flashvars.indexOf("videoUrl=") + 9);
+                String flashvars = embed.attr("flashvars");
+                String videoSrc = flashvars.substring(flashvars.indexOf("videoUrl=") + 9);
 
-            System.out.println(videoSrc);
+                urls.add(videoSrc);
 
-            download(Collections.singletonList(videoSrc), outputDir);
+                String[] strs = videoSrc.split("/");
+                fileName = strs[strs.length-1];
+                isResolved = true;
+            }
+
+            System.out.println(urls.get(0));
+
+            download(Collections.singletonList(urls.get(0)), outputDir);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -39,8 +82,6 @@ public class Diyishipin extends BaseSite {
     @Override
     void download(List<String> videoSrcs, String outputDir) {
 
-        String[] strs = videoSrcs.get(0).split("/");
-        String fileName = strs[strs.length-1];
         String fileDir = outputDir + File.separatorChar + fileName.replaceAll("[/|\\\\]", "");
 
         try {
@@ -49,5 +90,12 @@ public class Diyishipin extends BaseSite {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public VideoBean getInfo() {
+        VideoBean bean = new VideoBean();
+        bean.setTitle(fileName);
+        return bean;
     }
 }

@@ -1,5 +1,6 @@
 package website;
 
+import bean.VideoBean;
 import org.json.JSONObject;
 import util.DownloadUtil;
 
@@ -17,11 +18,12 @@ import static util.PrintUtil.println;
 
 /**
  * 知乎: https://www.zhihu.com/
+ *
  * @author Asche
  * @date 2018-10-20 18:02:29
  * @github https://github.com/asche910
  */
-public class Zhihu extends BaseSite{
+public class Zhihu extends BaseSite {
 
     private String ApiUrl = "https://lens.zhihu.com/api/videos/";
     private int timeLength;
@@ -29,30 +31,53 @@ public class Zhihu extends BaseSite{
     private String format;
     private String id;
 
+    private boolean isResolved;
+
+    public Zhihu() {
+    }
+
+    public Zhihu(String playUrl, String outputDir) {
+        if (!isResolved) {
+            // 解析出视频id
+            String[] strs = playUrl.split("/");
+            for (String str : strs)
+                if (str.matches("\\d{8,}"))
+                    id = str;
+            isResolved = true;
+        }
+    }
+
+
     @Override
-    public void downloadByUrl(String playUrl, String outputDir){
+    public void downloadByUrl(String playUrl, String outputDir) {
         System.out.println("website.Zhihu start: ");
+
         // 解析出视频id
-        String[] strs = playUrl.split("/");
-        for (String str: strs)
-            if (str.matches("\\d{8,}"))
-                id = str;
-        String fileDir = outputDir + File.separatorChar +  "zhihu_" + id + ".mp4";
+        if (!isResolved) {
+            String[] strs = playUrl.split("/");
+            for (String str : strs)
+                if (str.matches("\\d{8,}"))
+                    id = str;
+        }
+
+        String fileDir = outputDir + File.separatorChar + "zhihu_" + id + ".mp4";
+
+        isResolved = true;
 
         try {
             String videoSrc = getVideoSrc(ApiUrl + id);
 
             println("# Title: " + "zhihu_" + id);
-            println("     -TimeLength: " + timeLength / 60 + ":" + timeLength % 60);
+            println("     -TimeLength: " + timeLength / 60 + ":" + String.format("%02d", timeLength % 60));
             println("     -File Size: " + fileSize / 1024 / 1024 + " M");
 
-            if (format.equals("mp4")){
+            if (format.equals("mp4")) {
                 download(Collections.singletonList(videoSrc), fileDir);
-            }else {
+            } else {
                 FileOutputStream outputStream = new FileOutputStream(new File(fileDir));
                 List<String> urls = getSrcList(videoSrc);
 
-                for(String url: urls){
+                for (String url : urls) {
                     util.HttpUtil.combineStream(util.HttpUtil.getInputStream(url), outputStream);
                 }
                 outputStream.close();
@@ -68,8 +93,18 @@ public class Zhihu extends BaseSite{
         DownloadUtil.downloadVideo(videoSrcs.get(0), outputDir);
     }
 
+    @Override
+    public VideoBean getInfo() {
+        VideoBean bean = new VideoBean();
+        bean.setTitle("zhihu_" + id);
+        bean.setTimeLength(timeLength / 60 + ":" + String.format("%02d", timeLength % 60));
+        bean.setSize(fileSize / 1024 / 1024);
+        return bean;
+    }
+
     /**
      * 由api提取出最高清晰度的url, format, timeLength, fileSize
+     *
      * @param url
      * @return play_url
      */
@@ -79,21 +114,21 @@ public class Zhihu extends BaseSite{
 
         JSONObject jsonObject = new JSONObject(json).getJSONObject("playlist");
 
-        if(jsonObject.has("hd")){
+        if (jsonObject.has("hd")) {
             JSONObject jb = jsonObject.getJSONObject("hd");
             format = jb.getString("format");
             timeLength = jb.getInt("duration");
             fileSize = jb.getInt("size");
 
             return jb.getString("play_url");
-        }else if(jsonObject.has("sd")){
+        } else if (jsonObject.has("sd")) {
             JSONObject jb = jsonObject.getJSONObject("sd");
             format = jb.getString("format");
             timeLength = jb.getInt("duration");
             fileSize = jb.getInt("size");
 
             return jb.getString("play_url");
-        }else if(jsonObject.has("ld")){
+        } else if (jsonObject.has("ld")) {
             JSONObject jb = jsonObject.getJSONObject("ld");
             format = jb.getString("format");
             timeLength = jb.getInt("duration");
@@ -106,6 +141,7 @@ public class Zhihu extends BaseSite{
 
     /**
      * 解析出播放清单文件内分散的多个js格式视频url
+     *
      * @param url
      * @return
      */
@@ -120,7 +156,7 @@ public class Zhihu extends BaseSite{
         // 正则提取出的为相对路径, 需与前面的relUrl完成拼接
         Matcher matcher = Pattern.compile("EXTINF:\\d+\\.\\d+,(.+?)#").matcher(content);
 
-        while (matcher.find()){
+        while (matcher.find()) {
             System.out.println(matcher.group(1));
             list.add(relUrl + "/" + matcher.group(1));
         }

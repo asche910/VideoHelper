@@ -1,6 +1,7 @@
 package website;
 
 import bean.BilibiliBean;
+import bean.VideoBean;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 import org.json.JSONArray;
@@ -43,7 +44,7 @@ public class Bilibili extends BaseSite {
 
     private int quality = RESOLUTION_1080;
 
-    private List<String> urls = new ArrayList<>();
+//    private List<String> urls = new ArrayList<>();
     private String playUrl;
     private String fileName;
     private int timeLength;
@@ -62,6 +63,67 @@ public class Bilibili extends BaseSite {
     // ep的关联系列
     private List<BilibiliBean> serialList = new ArrayList<>();
 
+    // 是否已经解析
+    private boolean isResolved;
+
+
+    public Bilibili() {
+    }
+
+    /**
+     * 先获取信息再决定是否下载
+     * @param playUrl
+     * @param outputDir
+     */
+    public Bilibili(String playUrl, String outputDir) {
+        if (!isResolved) {
+            this.playUrl = playUrl;
+
+            String[] strs = playUrl.split("/");
+
+            for (String str : strs) {
+                if (str.matches("av\\d{4,}")) {
+                    aid = Integer.parseInt(str.substring(2));
+                    isSupported = true;
+                    break;
+                } else if(str.matches("ep\\d{4,}")){
+                    type = EP_VIDEO;
+                    isSupported = true;
+                    break;
+                } else if(str.matches("ss\\d{4,}")){
+                    type = SS_VIDEO;
+                    isSupported = true;
+                    break;
+                }
+            }
+
+            try {
+                switch (type) {
+                    case SS_VIDEO:
+                    case EP_VIDEO:
+                        initEp();
+
+                        String epApi = generateEpApi(EpApi, cid, quality);
+                        println(epApi);
+
+                        parseEpApiResponse(epApi);
+                        break;
+                    case AV_VIDEO:
+                        initAv();
+
+                        String avApi = generateAvApi(AvApi, cid, quality);
+                        println(avApi);
+
+                        parseAvApiResponse(avApi);
+                        break;
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            isResolved = true;
+        }
+    }
 
     @Override
     public void downloadByUrl(String playUrl, String outputDir) {
@@ -87,28 +149,32 @@ public class Bilibili extends BaseSite {
         }
 
         try {
-            switch (type) {
-                case SS_VIDEO:
-                case EP_VIDEO:
-                    initEp();
 
-                    String epApi = generateEpApi(EpApi, cid, quality);
-                    println(epApi);
+            if (!isResolved) {
+                switch (type) {
+                    case SS_VIDEO:
+                    case EP_VIDEO:
+                        initEp();
 
-                    parseEpApiResponse(epApi);
-                    break;
-                case AV_VIDEO:
-                    initAv();
+                        String epApi = generateEpApi(EpApi, cid, quality);
+                        println(epApi);
 
-                    String avApi = generateAvApi(AvApi, cid, quality);
-                    println(avApi);
+                        parseEpApiResponse(epApi);
+                        break;
+                    case AV_VIDEO:
+                        initAv();
 
-                    parseAvApiResponse(avApi);
-                    break;
+                        String avApi = generateAvApi(AvApi, cid, quality);
+                        println(avApi);
+
+                        parseAvApiResponse(avApi);
+                        break;
+                }
+                isResolved = true;
             }
 
             println("# Title: " + fileName);
-            println("     -TimeLength: " + timeLength / 1000 / 60 + ":" + timeLength / 1000 % 60);
+            println("     -TimeLength: " + timeLength / 1000 / 60 + ":" + String.format("%02d", timeLength / 1000 % 60));
             println("     -File Size: " + fileSize / 1024 / 1024 + " M");
 
             download(urls, outputDir);
@@ -117,7 +183,6 @@ public class Bilibili extends BaseSite {
             e.printStackTrace();
         }
     }
-
 
     /**
      * 内部下载入口
@@ -138,6 +203,7 @@ public class Bilibili extends BaseSite {
 
             String fileDir;
             if (videoSrcs.size() == 1) {
+
                 fileDir = outputDir + File.separatorChar + fileName.replaceAll("[/|\\\\]", "") + ".flv";
             } else {
                 fileDir = outputDir + File.separatorChar + fileName.replaceAll("[/|\\\\]", "") + "【" + index + "】.flv";
@@ -146,6 +212,15 @@ public class Bilibili extends BaseSite {
             DownloadUtil.downloadVideo(src, fileDir, headerMap);
         }
         println("Download: All Done!");
+    }
+
+    @Override
+    public VideoBean getInfo() {
+        VideoBean bean = new VideoBean();
+        bean.setTitle(fileName);
+        bean.setTimeLength(timeLength / 1000 / 60 + ":" + String.format("%02d", timeLength / 1000 % 60));
+        bean.setSize(fileSize / 1024 / 1024);
+        return bean;
     }
 
     /**
@@ -220,7 +295,7 @@ public class Bilibili extends BaseSite {
     private void parseAvApiResponse(String avReqApi) throws IOException {
         String result = HttpUtil.getResponseContent(avReqApi);
 
-        System.out.println(result);
+        // println(result);
 
         JSONObject jsonObject = new JSONObject(result);
         timeLength = jsonObject.getInt("timelength");
