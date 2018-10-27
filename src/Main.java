@@ -5,7 +5,7 @@ import java.io.File;
 import static util.PrintUtil.println;
 
 public class Main {
-    private static String playUrl = "https://www.bilibili.com/video/av34350976/";
+    private static String playUrl = "https://www.bilibili.com/bangumi/play/ss25733/";
     private static String outputDir;
 
     public static void main(String[] args) {

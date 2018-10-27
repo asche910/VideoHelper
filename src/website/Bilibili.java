@@ -127,7 +127,7 @@ public class Bilibili extends BaseSite {
 
     @Override
     public void downloadByUrl(String playUrl, String outputDir) {
-        System.out.println("Bilibili start: ");
+        println("Bilibili start: ");
 
         this.playUrl = playUrl;
         String[] strs = playUrl.split("/");
@@ -221,6 +221,10 @@ public class Bilibili extends BaseSite {
         bean.setTimeLength(timeLength / 1000 / 60 + ":" + String.format("%02d", timeLength / 1000 % 60));
         bean.setSize(fileSize / 1024 / 1024);
         return bean;
+    }
+
+    public List<BilibiliBean> getSerialList(){
+        return serialList;
     }
 
     /**
