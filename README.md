@@ -37,5 +37,5 @@ cmd或bash里面
 
 
 知乎教程介绍参照这里:
-https://www.cnblogs.com/apknet/p/9664987.html
+https://www.cnblogs.com/asche/p/9664987.html
 
