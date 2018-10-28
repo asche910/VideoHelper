@@ -20,7 +20,7 @@
 cmd或bash里面
 ```
   // 后面outputDir可选
-  java -jar playUrl outputDir
+  java -jar VideoHelper.jar playUrl outputDir
   
 ```
 如图：
